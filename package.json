@@ -1,0 +1,22 @@
+{
+  "name": "qbitcoin-js",
+  "private": true,
+  "description": "Shared TypeScript packages for wallets and tools built on the QBitcoin protocol.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "eslint": "9.39.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.4"
+  },
+  "packageManager": "pnpm@10.13.1"
+}

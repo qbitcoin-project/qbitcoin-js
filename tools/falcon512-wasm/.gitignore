@@ -1,0 +1,10 @@
+# PQClean source is fetched on demand by fetch-pqclean.sh.
+# We don't commit it — the script pins a specific commit, which is
+# enough for reproducibility.
+pqclean-src/
+
+# Build artifacts
+out/
+*.o
+*.wasm
+*.mjs
