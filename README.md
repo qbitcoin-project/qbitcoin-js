@@ -100,9 +100,12 @@ convenience, not a requirement. The full API is documented per package:
   pages and extension service workers. `@qbtc/chain` needs only `fetch`.
 - **No global state.** Two profiles can coexist in one process — a tool
   bridging two networks does not have to choose.
-- **Sources ship as TypeScript.** Consumers compile the packages with
-  their own toolchain; there is no build step and no dual CJS/ESM
-  artifact to keep in sync.
+- **Compiled ESM with declarations, sources alongside.** Each package
+  ships `dist/` — ES2022 modules, `.d.ts` files and source maps — so it
+  runs in Node without a bundler and type-checks against a stable
+  declaration surface regardless of the consumer's compiler settings.
+  The TypeScript sources are in the tarball too, for auditing and for
+  the source maps to resolve. There is no CommonJS build.
 
 ## Frozen values
 
@@ -120,6 +123,7 @@ Requires pnpm ≥ 10 and Node ≥ 22.
 ```bash
 pnpm install
 pnpm test        # every package's suite
+pnpm build       # dist/ for every package (also runs on npm pack/publish)
 pnpm typecheck
 pnpm lint
 ```
@@ -143,6 +147,9 @@ checkout with a pnpm override:
 ```jsonc
 "pnpm": { "overrides": { "@qbtc/crypto": "file:../qbitcoin-js/packages/crypto" } }
 ```
+
+The package entry points live in `dist/`, so run `pnpm build` in the
+checkout first (or `tsc -p tsconfig.build.json --watch` while editing).
 
 ## Security
 
