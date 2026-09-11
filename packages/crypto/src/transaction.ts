@@ -9,10 +9,10 @@
 //
 // All multi-byte numeric fields are little-endian.
 
-import { SIGHASH } from './constants';
-import { decodeVarint, encodeVarint } from './encoding/varint';
-import { decodeVarstr, encodeVarstr } from './encoding/varstr';
-import { hash256 } from './hashes';
+import { SIGHASH } from './constants.js';
+import { decodeVarint, encodeVarint } from './encoding/varint.js';
+import { decodeVarstr, encodeVarstr } from './encoding/varstr.js';
+import { hash256 } from './hashes.js';
 
 /** TX_TYPE numeric values from the node. */
 export const TX_TYPE_STANDARD = 1;

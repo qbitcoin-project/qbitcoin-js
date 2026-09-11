@@ -12,8 +12,8 @@
 // pool-spend marker. The wallet needs only the DEPOSIT side: the script to
 // detect/compose payments and the address to display.
 
-import { hash160, sha256 } from '../hashes';
-import { btcP2shAddress, type BtcNetwork } from './address';
+import { hash160, sha256 } from '../hashes.js';
+import { btcP2shAddress, type BtcNetwork } from './address.js';
 
 const OP_HASH160 = 0xa9;
 const OP_EQUAL = 0x87;

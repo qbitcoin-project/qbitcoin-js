@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { decodeBase58Check, encodeBase58Check } from './base58check';
-import { fromHex, toHex } from './hex';
+import { decodeBase58Check, encodeBase58Check } from './base58check.js';
+import { fromHex, toHex } from './hex.js';
 
 describe('encodeBase58Check — Bitcoin-compat (1-byte version)', () => {
   // Known WIF test vector (Bitcoin testnet private key + compressed flag).

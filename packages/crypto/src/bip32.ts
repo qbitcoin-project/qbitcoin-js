@@ -18,7 +18,7 @@
 // keygen seeds via HKDF — see `falconHd.ts`.
 
 import { HDKey } from '@scure/bip32';
-import type { Network } from './constants';
+import type { Network } from './constants.js';
 
 export { HDKey };
 

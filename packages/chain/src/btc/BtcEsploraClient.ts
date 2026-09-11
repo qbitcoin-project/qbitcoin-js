@@ -8,8 +8,8 @@
 // would couple two protocols that only look similar. The transport layer
 // (timeout/retry/error mapping) is shared.
 
-import { ChainError } from '../errors';
-import { request, type TransportOptions } from '../transport';
+import { ChainError } from '../errors.js';
+import { request, type TransportOptions } from '../transport.js';
 
 /**
  * Public Bitcoin esplora instances used when the caller doesn't bring its

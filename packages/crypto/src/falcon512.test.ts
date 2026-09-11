@@ -8,10 +8,10 @@ import {
   falcon512KeygenFromSeed,
   falcon512Sign,
   falcon512Verify,
-} from './falcon512';
-import { decodeBase58Check } from './encoding/base58check';
-import { fromHex, toHex } from './encoding/hex';
-import { hash256 } from './hashes';
+} from './falcon512.js';
+import { decodeBase58Check } from './encoding/base58check.js';
+import { fromHex, toHex } from './encoding/hex.js';
+import { hash256 } from './hashes.js';
 
 describe('Falcon-512 constants — match PQClean sizes', () => {
   it('public key is 897 bytes', () => {

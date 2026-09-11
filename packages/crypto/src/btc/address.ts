@@ -9,8 +9,8 @@
 //
 // Chain-generic Bitcoin, no chain-specific values.
 
-import { decodeBase58Check, encodeBase58Check } from '../encoding/base58check';
-import { hash160 } from '../hashes';
+import { decodeBase58Check, encodeBase58Check } from '../encoding/base58check.js';
+import { hash160 } from '../hashes.js';
 
 export type BtcNetwork = 'mainnet' | 'testnet';
 

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { addressFromPubkey } from './address';
-import { derivePath, nativePathFor, masterKeyFromSeed } from './bip32';
-import type { Network } from './constants';
-import { bindProfile } from './profile';
-import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures';
-import { addressFromXpub, exportAccountXpubFor, isValidAccountXpub, parseAccountXpub } from './xpub';
+import { addressFromPubkey } from './address.js';
+import { derivePath, nativePathFor, masterKeyFromSeed } from './bip32.js';
+import type { Network } from './constants.js';
+import { bindProfile } from './profile.js';
+import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures.js';
+import { addressFromXpub, exportAccountXpubFor, isValidAccountXpub, parseAccountXpub } from './xpub.js';
 
 const chain = bindProfile(TEST_PROFILE);
 const MAGIC = TEST_PROFILE.addrMagic;

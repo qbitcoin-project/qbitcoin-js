@@ -9,9 +9,9 @@
 // into a keygen seed, so it has no xpub; watch-only there relies on an explicit
 // list of derived addresses instead.)
 
-import { addressFromPubkey, type AddrMagic } from './address';
-import { nativePathFor, HDKey, type DerivationScheme } from './bip32';
-import type { Network } from './constants';
+import { addressFromPubkey, type AddrMagic } from './address.js';
+import { nativePathFor, HDKey, type DerivationScheme } from './bip32.js';
+import type { Network } from './constants.js';
 
 // Depth of an account node: purpose (44') / coin_type' / account'.
 const ACCOUNT_DEPTH = 3;

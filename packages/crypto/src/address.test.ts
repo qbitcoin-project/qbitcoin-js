@@ -5,11 +5,11 @@ import {
   decodeAddress,
   scripthashFromPubkey,
   validateAddress,
-} from './address';
-import { fromHex, toHex } from './encoding/hex';
-import { hash256 } from './hashes';
-import { TEST_PROFILE } from './profile.fixtures';
-import { scriptP2PK } from './script';
+} from './address.js';
+import { fromHex, toHex } from './encoding/hex.js';
+import { hash256 } from './hashes.js';
+import { TEST_PROFILE } from './profile.fixtures.js';
+import { scriptP2PK } from './script.js';
 
 const MAGIC = TEST_PROFILE.addrMagic;
 const REGEX = TEST_PROFILE.addressRegex;

@@ -22,16 +22,16 @@
 // algorithm the payload is valid for — in the node's own preference order —
 // and the caller (typically the import UI) picks one.
 
-import type { Algorithm, Network } from './constants';
-import { decodeBase58Check, encodeBase58Check } from './encoding/base58check';
+import type { Algorithm, Network } from './constants.js';
+import { decodeBase58Check, encodeBase58Check } from './encoding/base58check.js';
 import {
   FALCON512_PRIVATE_KEY_BYTES,
   FALCON512_PUBLIC_KEY_BYTES,
   falcon512Sign,
   falcon512Verify,
   type Falcon512Keypair,
-} from './falcon512';
-import { PRIVATE_KEY_BYTES, isValidPrivateKey } from './secp256k1';
+} from './falcon512.js';
+import { PRIVATE_KEY_BYTES, isValidPrivateKey } from './secp256k1.js';
 
 /** Length of a Falcon-512 WIF payload: private key ‖ public key (2178). */
 export const FALCON512_KEYPAIR_BYTES =

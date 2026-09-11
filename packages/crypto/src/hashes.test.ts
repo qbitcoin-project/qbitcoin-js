@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checksum32, hash160, hash256, ripemd160, sha256 } from './hashes';
+import { checksum32, hash160, hash256, ripemd160, sha256 } from './hashes.js';
 
 // Test vectors from RFC 6234 (SHA-256), RFC 3174 (RIPEMD-160 NESSIE
 // vectors), and Bitcoin Core's test suite.

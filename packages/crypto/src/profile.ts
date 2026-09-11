@@ -30,7 +30,7 @@ import {
   type AddrMagic,
   type AddressRegex,
   type DecodedAddress,
-} from './address';
+} from './address.js';
 import {
   activeScheme,
   legacySchemes,
@@ -39,25 +39,25 @@ import {
   schemeById,
   type DerivationScheme,
   type HDKey,
-} from './bip32';
+} from './bip32.js';
 import {
   forkCommitsTokenId,
   type Algorithm,
   type DowngradeChainConfig,
   type Network,
   type UpgradeChainConfig,
-} from './constants';
-import { deriveAppDataKey } from './appData';
-import { FALCON512_PUBLIC_KEY_BYTES, type Falcon512Keypair } from './falcon512';
-import { deriveFalconKeypair, nativePqPathFor } from './falconHd';
+} from './constants.js';
+import { deriveAppDataKey } from './appData.js';
+import { FALCON512_PUBLIC_KEY_BYTES, type Falcon512Keypair } from './falcon512.js';
+import { deriveFalconKeypair, nativePqPathFor } from './falconHd.js';
 import {
   signedMessageDigest,
   signedMessagePreimage,
   signMessage,
   verifyMessage,
-} from './signedMessage';
-import { decodeWif, encodeWif, type DecodedWif } from './wif';
-import { addressFromXpub, exportAccountXpubFor } from './xpub';
+} from './signedMessage.js';
+import { decodeWif, encodeWif, type DecodedWif } from './wif.js';
+import { addressFromXpub, exportAccountXpubFor } from './xpub.js';
 
 /** Per-network one-byte WIF version prefixes (see `profile.wifVersion`). */
 export type WifVersionMap = Readonly<Record<Network, number>>;

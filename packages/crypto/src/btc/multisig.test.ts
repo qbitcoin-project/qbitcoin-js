@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { fromHex, toHex } from '../encoding/hex';
-import { hash160, sha256 } from '../hashes';
-import { getPublicKey } from '../secp256k1';
-import { decodeBtcAddress } from './address';
-import { btcP2shP2wshMultisig } from './multisig';
+import { fromHex, toHex } from '../encoding/hex.js';
+import { hash160, sha256 } from '../hashes.js';
+import { getPublicKey } from '../secp256k1.js';
+import { decodeBtcAddress } from './address.js';
+import { btcP2shP2wshMultisig } from './multisig.js';
 
 // Three real compressed pubkeys (synthetic private keys) — handed to the
 // builder in a deliberately unsorted order everywhere below.

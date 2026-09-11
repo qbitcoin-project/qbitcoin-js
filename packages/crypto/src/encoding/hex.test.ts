@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fromHex, toHex } from './hex';
+import { fromHex, toHex } from './hex.js';
 
 describe('toHex', () => {
   it('encodes empty', () => {

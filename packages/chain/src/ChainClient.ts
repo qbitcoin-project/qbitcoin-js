@@ -10,9 +10,9 @@
 // node B is at best wasteful and at worst causes confusing UX (which
 // node "owns" the broadcast?). Caller can manually retry.
 
-import type { Network, NodeEndpoint } from './nodes';
-import { ChainError, isRetryableCode } from './errors';
-import { EsploraClient } from './EsploraClient';
+import type { Network, NodeEndpoint } from './nodes.js';
+import { ChainError, isRetryableCode } from './errors.js';
+import { EsploraClient } from './EsploraClient.js';
 import type {
   AddressInfo,
   BlockchainInfo,
@@ -24,8 +24,8 @@ import type {
   TokenTransfer,
   Outspend,
   Utxo,
-} from './types';
-import type { TransportOptions } from './transport';
+} from './types.js';
+import type { TransportOptions } from './transport.js';
 
 export interface ChainClientConfig {
   readonly network: Network;

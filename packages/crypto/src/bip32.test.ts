@@ -9,9 +9,9 @@ import {
   requireScheme,
   schemeById,
   type DerivationScheme,
-} from './bip32';
-import { fromHex, toHex } from './encoding/hex';
-import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures';
+} from './bip32.js';
+import { fromHex, toHex } from './encoding/hex.js';
+import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures.js';
 
 // BIP-32 official test vectors from the spec:
 // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#test-vectors

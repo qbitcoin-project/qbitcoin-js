@@ -1,18 +1,18 @@
 // Public API of @qbtc/chain.
 
-export { ChainClient, type ChainClientConfig } from './ChainClient';
-export { EsploraClient } from './EsploraClient';
+export { ChainClient, type ChainClientConfig } from './ChainClient.js';
+export { EsploraClient } from './EsploraClient.js';
 export {
   ChainError,
   isRetryableCode,
   type ChainErrorCode,
-} from './errors';
+} from './errors.js';
 export {
   nodesFor,
   type Network,
   type NodeEndpoint,
   type Protocol,
-} from './nodes';
+} from './nodes.js';
 export {
   balanceOf,
   type AddressInfo,
@@ -30,8 +30,8 @@ export {
   type TokenInfo,
   type TokenTransfer,
   type Utxo,
-} from './types';
-export type { TransportOptions } from './transport';
+} from './types.js';
+export type { TransportOptions } from './transport.js';
 export {
   BTC_ESPLORA_DEFAULTS,
   BTC_ESPLORA_TESTNET_DEFAULTS,
@@ -42,4 +42,4 @@ export {
   type BtcHistoryTx,
   type BtcTxStatus,
   type BtcUtxo,
-} from './btc/BtcEsploraClient';
+} from './btc/BtcEsploraClient.js';

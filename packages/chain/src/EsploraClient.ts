@@ -29,10 +29,10 @@ import type {
   TokenInfo,
   TokenTransfer,
   Utxo,
-} from './types';
-import type { NodeEndpoint } from './nodes';
-import { ChainError } from './errors';
-import { request, type TransportOptions } from './transport';
+} from './types.js';
+import type { NodeEndpoint } from './nodes.js';
+import { ChainError } from './errors.js';
+import { request, type TransportOptions } from './transport.js';
 
 // ─── Raw Esplora response shapes ─────────────────────────────────────
 //

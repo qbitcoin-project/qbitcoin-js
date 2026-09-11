@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { encodeBase58Check } from './encoding/base58check';
-import { fromHex, toHex } from './encoding/hex';
+import { encodeBase58Check } from './encoding/base58check.js';
+import { fromHex, toHex } from './encoding/hex.js';
 import {
   FALCON512_PRIVATE_KEY_BYTES,
   FALCON512_PUBLIC_KEY_BYTES,
   falcon512Verify,
-} from './falcon512';
-import { hash256 } from './hashes';
+} from './falcon512.js';
+import { hash256 } from './hashes.js';
 import {
   FALCON512_KEYPAIR_BYTES,
   WifError,
@@ -14,9 +14,9 @@ import {
   decodeWif,
   encodeWif,
   falconKeypairFromWifPayload,
-} from './wif';
-import { NODE_FALCON_SIG_HEX, NODE_FALCON_WIF } from './wif.vectors';
-import { TEST_PROFILE } from './profile.fixtures';
+} from './wif.js';
+import { NODE_FALCON_SIG_HEX, NODE_FALCON_WIF } from './wif.vectors.js';
+import { TEST_PROFILE } from './profile.fixtures.js';
 
 const V = TEST_PROFILE.wifVersion; // 0x80 / 0xEF — Bitcoin-compatible bytes
 

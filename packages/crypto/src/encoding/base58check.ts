@@ -13,7 +13,7 @@
 // The whole thing is encoded in Base58 with Bitcoin's alphabet.
 
 import { base58 } from '@scure/base';
-import { checksum32 } from '../hashes';
+import { checksum32 } from '../hashes.js';
 
 /**
  * Encode `version || payload` with an appended Base58Check checksum.

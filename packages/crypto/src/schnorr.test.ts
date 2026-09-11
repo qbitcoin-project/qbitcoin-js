@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { addressFromPubkey, validateAddress } from './address';
-import { TEST_PROFILE } from './profile.fixtures';
+import { addressFromPubkey, validateAddress } from './address.js';
+import { TEST_PROFILE } from './profile.fixtures.js';
 import {
   SchnorrDisabledError,
   isSchnorrEnabled,
   setSchnorrEnabled,
-} from './features';
-import { fromHex, toHex } from './encoding/hex';
+} from './features.js';
+import { fromHex, toHex } from './encoding/hex.js';
 import {
   SCHNORR_PUBLIC_KEY_BYTES,
   SCHNORR_SIGNATURE_BYTES,
@@ -14,15 +14,15 @@ import {
   schnorrGetPublicKey,
   schnorrSign,
   schnorrVerify,
-} from './schnorr';
-import { BIP340_VECTORS_CSV } from './schnorr.vectors';
-import { getPublicKey as ecdsaGetPublicKey } from './secp256k1';
+} from './schnorr.js';
+import { BIP340_VECTORS_CSV } from './schnorr.vectors.js';
+import { getPublicKey as ecdsaGetPublicKey } from './secp256k1.js';
 import {
   SIGHASH,
   encodeSiglistEntry,
   signWithAlgorithm,
   verifySiglistEntry,
-} from './index';
+} from './index.js';
 
 interface Bip340Vector {
   readonly index: number;

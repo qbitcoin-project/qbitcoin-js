@@ -41,11 +41,11 @@
 // Chain values (keys and windows) come from the consumer's ChainProfile
 // (`profile.downgrade`); everything here is generic mechanics.
 
-import { hash160, hash256 } from './hashes';
-import { opPushdata } from './script';
-import { sighash, TX_TYPE_STANDARD, type Transaction, type TxInput, type TxOutput } from './transaction';
-import { encodeSiglistEntry, signWithAlgorithm, type SigningInput } from './signing';
-import { SIGHASH } from './constants';
+import { hash160, hash256 } from './hashes.js';
+import { opPushdata } from './script.js';
+import { sighash, TX_TYPE_STANDARD, type Transaction, type TxInput, type TxOutput } from './transaction.js';
+import { encodeSiglistEntry, signWithAlgorithm, type SigningInput } from './signing.js';
+import { SIGHASH } from './constants.js';
 
 // Opcode bytes (matching the node's script engine).
 const OP_1 = 0x51;

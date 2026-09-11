@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { decodeVarstr, encodeVarstr } from './varstr';
-import { fromHex, toHex } from './hex';
+import { decodeVarstr, encodeVarstr } from './varstr.js';
+import { fromHex, toHex } from './hex.js';
 
 describe('encodeVarstr', () => {
   it('encodes empty string', () => {

@@ -1,19 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { addressFromScripthash, validateAddress } from './address';
-import { nativePathFor } from './bip32';
-import type { DowngradeChainConfig, UpgradeChainConfig } from './constants';
-import { federationFreezeScript } from './downgrade';
-import { deriveAppDataKey } from './appData';
-import { masterKeyFromSeed } from './bip32';
-import { fromHex, toHex } from './encoding/hex';
-import { deriveFalconKeypair } from './falconHd';
-import { bindProfile, validateProfile, type ChainProfile } from './profile';
-import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures';
-import { getPublicKey } from './secp256k1';
-import { signedMessageDigest } from './signedMessage';
-import { decodeWif, encodeWif } from './wif';
-import { exportAccountXpubFor, parseAccountXpub } from './xpub';
+import { addressFromScripthash, validateAddress } from './address.js';
+import { nativePathFor } from './bip32.js';
+import type { DowngradeChainConfig, UpgradeChainConfig } from './constants.js';
+import { federationFreezeScript } from './downgrade.js';
+import { deriveAppDataKey } from './appData.js';
+import { masterKeyFromSeed } from './bip32.js';
+import { fromHex, toHex } from './encoding/hex.js';
+import { deriveFalconKeypair } from './falconHd.js';
+import { bindProfile, validateProfile, type ChainProfile } from './profile.js';
+import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures.js';
+import { getPublicKey } from './secp256k1.js';
+import { signedMessageDigest } from './signedMessage.js';
+import { decodeWif, encodeWif } from './wif.js';
+import { exportAccountXpubFor, parseAccountXpub } from './xpub.js';
 
 const chain = bindProfile(TEST_PROFILE);
 

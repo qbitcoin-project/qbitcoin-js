@@ -23,14 +23,14 @@ import {
   type Algorithm,
   isPostQuantum,
   type Network,
-} from './constants';
+} from './constants.js';
 import {
   decodeBase58Check,
   encodeBase58Check,
-} from './encoding/base58check';
-import { toHex } from './encoding/hex';
-import { hash160, hash256 } from './hashes';
-import { scriptP2PK } from './script';
+} from './encoding/base58check.js';
+import { toHex } from './encoding/hex.js';
+import { hash160, hash256 } from './hashes.js';
+import { scriptP2PK } from './script.js';
 
 const HASH160_LEN = 20;
 const HASH256_LEN = 32;

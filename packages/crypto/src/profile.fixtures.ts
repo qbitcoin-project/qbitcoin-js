@@ -7,9 +7,9 @@
 // all payloads (magic‖00…00‖0000… to magic‖ff…ff‖ffff…), sampled for
 // length constancy. profile.test.ts re-verifies them property-style.
 
-import type { DerivationScheme } from './bip32';
-import { coinTypeFor } from './bip32';
-import type { ChainProfile } from './profile';
+import type { DerivationScheme } from './bip32.js';
+import { coinTypeFor } from './bip32.js';
+import type { ChainProfile } from './profile.js';
 
 /** Legacy scheme: single-number coin_type (the pre-SLIP-0044 shape). */
 export const TEST_SCHEME_V1: DerivationScheme = {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ChainError } from '../errors';
-import { BTC_ESPLORA_DEFAULTS, BTC_ESPLORA_TESTNET_DEFAULTS, btcEsploraDefaultsFor, BtcEsploraClient } from './BtcEsploraClient';
+import { ChainError } from '../errors.js';
+import { BTC_ESPLORA_DEFAULTS, BTC_ESPLORA_TESTNET_DEFAULTS, btcEsploraDefaultsFor, BtcEsploraClient } from './BtcEsploraClient.js';
 
 const BASE = 'https://btc.example.org/api';
 

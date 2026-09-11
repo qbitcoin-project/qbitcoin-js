@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { decodeVarint, encodeVarint } from './varint';
-import { fromHex, toHex } from './hex';
+import { decodeVarint, encodeVarint } from './varint.js';
+import { fromHex, toHex } from './hex.js';
 
 // Test vectors from Bitcoin Core's `serialize.h` and `compactsize.h` docs.
 // Cover all four ranges plus the boundary values.

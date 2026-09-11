@@ -12,23 +12,23 @@ import { hkdf } from '@noble/hashes/hkdf';
 import { sha256 as nobleSha256 } from '@noble/hashes/sha256';
 import { describe, expect, it } from 'vitest';
 
-import { addressFromPubkey, decodeAddress } from './address';
-import { derivePath, masterKeyFromSeed } from './bip32';
-import { mnemonicToSeed } from './bip39';
-import { toHex } from './encoding/hex';
+import { addressFromPubkey, decodeAddress } from './address.js';
+import { derivePath, masterKeyFromSeed } from './bip32.js';
+import { mnemonicToSeed } from './bip39.js';
+import { toHex } from './encoding/hex.js';
 import {
   FALCON512_PRIVATE_KEY_BYTES,
   FALCON512_PUBLIC_KEY_BYTES,
   falcon512Sign,
   falcon512Verify,
-} from './falcon512';
+} from './falcon512.js';
 import {
   PURPOSE_FALCON512,
   deriveFalconKeypair,
   nativePqPathFor,
-} from './falconHd';
-import { sha256 } from './hashes';
-import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures';
+} from './falconHd.js';
+import { sha256 } from './hashes.js';
+import { TEST_PROFILE, TEST_SCHEME_V1, TEST_SCHEME_V2 } from './profile.fixtures.js';
 
 /** The standard BIP-39 test mnemonic (same one bip39.test.ts uses). */
 const MNEMONIC =

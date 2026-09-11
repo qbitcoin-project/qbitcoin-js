@@ -11,8 +11,8 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { toHex } from './encoding/hex';
-import { sha256 } from './hashes';
+import { toHex } from './encoding/hex.js';
+import { sha256 } from './hashes.js';
 
 const WASM_SHA256 =
   '38031dca9ffc1e0d814f2a67a8c544c02fab6b7d3cfa419c4a06fafa877fbac1';

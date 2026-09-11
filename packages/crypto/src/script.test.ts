@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { OP_CHECKSIG, opPushdata, scriptP2PK, scriptType } from './script';
-import { fromHex, toHex } from './encoding/hex';
+import { OP_CHECKSIG, opPushdata, scriptP2PK, scriptType } from './script.js';
+import { fromHex, toHex } from './encoding/hex.js';
 
 describe('opPushdata — boundaries', () => {
   it('encodes empty as single 0x00 byte', () => {

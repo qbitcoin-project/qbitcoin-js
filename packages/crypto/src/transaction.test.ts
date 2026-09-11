@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { SIGHASH } from './constants';
-import { fromHex, toHex } from './encoding/hex';
+import { SIGHASH } from './constants.js';
+import { fromHex, toHex } from './encoding/hex.js';
 import {
   TX_TYPE_STANDARD,
   TX_TYPE_TOKENS,
@@ -11,7 +11,7 @@ import {
   sighash,
   txid,
   type Transaction,
-} from './transaction';
+} from './transaction.js';
 
 // Real transaction captured from a live node (`/api/mempool/recent`),
 // dump captured during protocol research.

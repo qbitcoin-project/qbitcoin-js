@@ -7,9 +7,9 @@
 // signing (RFC 6979, low-S) makes full-transaction hex comparable across
 // implementations.
 import { describe, expect, it } from 'vitest';
-import { fromHex, toHex } from '../encoding/hex';
-import { hash160 } from '../hashes';
-import { getPublicKey } from '../secp256k1';
+import { fromHex, toHex } from '../encoding/hex.js';
+import { hash160 } from '../hashes.js';
+import { getPublicKey } from '../secp256k1.js';
 import {
   BTC_RBF_SEQUENCE,
   btcSighashAll,
@@ -20,7 +20,7 @@ import {
   scriptBtcP2pkhForPubkey,
   serializeBtcTx,
   signBtcP2pkhSpend,
-} from './tx';
+} from './tx.js';
 
 // Fixed test key: private bytes 0x01..0x20 (same fixture family as
 // signedMessage.test.ts).

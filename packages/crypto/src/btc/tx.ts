@@ -12,10 +12,10 @@
 // format — those are chain parameters supplied by the caller (see
 // `UpgradeChainConfig` in the ChainProfile). This module is plain Bitcoin.
 
-import { encodeVarint } from '../encoding/varint';
-import { fromHex, toHex } from '../encoding/hex';
-import { hash160, hash256 } from '../hashes';
-import { getPublicKey, sign } from '../secp256k1';
+import { encodeVarint } from '../encoding/varint.js';
+import { fromHex, toHex } from '../encoding/hex.js';
+import { hash160, hash256 } from '../hashes.js';
+import { getPublicKey, sign } from '../secp256k1.js';
 
 /** An unspent output reference. `txid` is display order (big-endian hex). */
 export interface BtcOutPoint {

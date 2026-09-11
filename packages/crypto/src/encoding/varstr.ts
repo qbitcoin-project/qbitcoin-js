@@ -5,7 +5,7 @@
 // Used everywhere in tx serialization: scripthash, redeem_script, data,
 // siglist entries.
 
-import { decodeVarint, encodeVarint } from './varint';
+import { decodeVarint, encodeVarint } from './varint.js';
 
 /** Encode `bytes` as varstr = varint(length) || bytes. */
 export function encodeVarstr(bytes: Uint8Array): Uint8Array {

@@ -9,7 +9,7 @@
 // UI converts to
 // decimal for display; storage and math stay integer-safe.
 
-import type { NodeEndpoint, Network } from './nodes';
+import type { NodeEndpoint, Network } from './nodes.js';
 
 // ─── Address-level state ─────────────────────────────────────────────
 

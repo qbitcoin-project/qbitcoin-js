@@ -11,8 +11,8 @@
 // signing path means trusting one more maintainer with our security
 // posture.
 
-import { ChainError, isRetryableCode, type ChainErrorCode } from './errors';
-import { quoteLargeIntegers } from './jsonNumbers';
+import { ChainError, isRetryableCode, type ChainErrorCode } from './errors.js';
+import { quoteLargeIntegers } from './jsonNumbers.js';
 
 // ─── Configuration ───────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { balanceOf, type AddressInfo } from './types';
-import { nodesFor, type NodeEndpoint } from './nodes';
+import { balanceOf, type AddressInfo } from './types.js';
+import { nodesFor, type NodeEndpoint } from './nodes.js';
 
 describe('balanceOf', () => {
   it('returns confirmed-only when mempool is zero', () => {

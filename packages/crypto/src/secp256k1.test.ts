@@ -7,9 +7,9 @@ import {
   isValidPublicKey,
   sign,
   verify,
-} from './secp256k1';
-import { fromHex, toHex } from './encoding/hex';
-import { hash256 } from './hashes';
+} from './secp256k1.js';
+import { fromHex, toHex } from './encoding/hex.js';
+import { hash256 } from './hashes.js';
 
 // Well-known Bitcoin test private key — used in WIF examples on the
 // Bitcoin Wiki. Its corresponding pubkey is widely known and so make a

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fromHex, toHex } from '../encoding/hex';
+import { fromHex, toHex } from '../encoding/hex.js';
 import {
   bech32Encode,
   btcAddressFromScriptPubKey,
@@ -7,7 +7,7 @@ import {
   btcP2pkhAddressForPubkey,
   decodeBtcAddress,
   toWords,
-} from './address';
+} from './address.js';
 
 // The BIP-173 reference program (hash160 of the famous uncompressed G pubkey).
 const WPROG20 = fromHex('751e76e8199196d454941c45d1b3a323f1433bd6');

@@ -6,7 +6,7 @@ import {
   SIGHASH,
   forkCommitsTokenId,
   isPostQuantum,
-} from './constants';
+} from './constants.js';
 
 // Only protocol-level constants live here — per-chain values (address
 // magic, WIF versions, schemes, labels) are ChainProfile fields and are

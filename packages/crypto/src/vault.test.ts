@@ -9,8 +9,8 @@ import {
   sealVault,
   unsealVault,
   type VaultBlob,
-} from './vault';
-import { fromHex, toHex } from './encoding/hex';
+} from './vault.js';
+import { fromHex, toHex } from './encoding/hex.js';
 
 // Fast KDF parameters for tests — production is ~0.5s per derivation; tests use
 // tiny costs (~ms). Same algorithms, same plumbing, just less work.

@@ -18,12 +18,12 @@
 // (1..4), so a signed message can never be mistaken for (or collide with)
 // a transaction sighash. `bindProfile()` enforces the 5-byte minimum.
 
-import type { Algorithm } from './constants';
-import { encodeVarstr } from './encoding/varstr';
-import { falcon512Verify } from './falcon512';
-import { hash256 } from './hashes';
-import { verify as secp256k1Verify } from './secp256k1';
-import { signWithAlgorithm } from './signing';
+import type { Algorithm } from './constants.js';
+import { encodeVarstr } from './encoding/varstr.js';
+import { falcon512Verify } from './falcon512.js';
+import { hash256 } from './hashes.js';
+import { verify as secp256k1Verify } from './secp256k1.js';
+import { signWithAlgorithm } from './signing.js';
 
 const utf8 = new TextEncoder();
 

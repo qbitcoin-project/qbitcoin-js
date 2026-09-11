@@ -4,7 +4,7 @@ import {
   deriveAppDataKey,
   openAppData,
   sealAppData,
-} from './appData';
+} from './appData.js';
 
 const seed = new Uint8Array(64).fill(7);
 const INFO = 'test/app-data/v1';

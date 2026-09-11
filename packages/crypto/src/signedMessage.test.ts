@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { fromHex, toHex } from './encoding/hex';
-import { TEST_PROFILE } from './profile.fixtures';
-import { getPublicKey } from './secp256k1';
+import { fromHex, toHex } from './encoding/hex.js';
+import { TEST_PROFILE } from './profile.fixtures.js';
+import { getPublicKey } from './secp256k1.js';
 import {
   signMessage,
   signedMessageDigest,
   signedMessagePreimage,
   verifyMessage,
-} from './signedMessage';
+} from './signedMessage.js';
 
 // Fixed test key: private bytes 0x01..0x20 (deterministic ECDSA → stable sig).
 const PRIV = (() => {

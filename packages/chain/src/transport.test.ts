@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ChainError } from './errors';
-import { request } from './transport';
+import { ChainError } from './errors.js';
+import { request } from './transport.js';
 
 // Helper — build a Response with the given status + body.
 function res(

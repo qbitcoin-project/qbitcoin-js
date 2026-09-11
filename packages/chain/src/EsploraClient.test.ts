@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ChainError } from './errors';
-import { EsploraClient } from './EsploraClient';
-import type { NodeEndpoint } from './nodes';
+import { ChainError } from './errors.js';
+import { EsploraClient } from './EsploraClient.js';
+import type { NodeEndpoint } from './nodes.js';
 import addressInfoFixture from './fixtures/address-info.json';
 import utxosFixture from './fixtures/utxos.json';
 import txFixture from './fixtures/tx.json';

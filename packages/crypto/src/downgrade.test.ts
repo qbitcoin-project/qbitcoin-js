@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SIGHASH } from './constants';
+import { SIGHASH } from './constants.js';
 import {
   buildFreezeOutput,
   downgradeScript,
@@ -11,12 +11,12 @@ import {
   reclaimIdFor,
   reclaimScripthash,
   signReclaimInput,
-} from './downgrade';
-import { fromHex, toHex } from './encoding/hex';
-import { hash160, hash256 } from './hashes';
-import { getPublicKey } from './secp256k1';
-import { serialize, sighash, TX_TYPE_STANDARD, txid, type Transaction } from './transaction';
-import { verifySiglistEntry } from './signing';
+} from './downgrade.js';
+import { fromHex, toHex } from './encoding/hex.js';
+import { hash160, hash256 } from './hashes.js';
+import { getPublicKey } from './secp256k1.js';
+import { serialize, sighash, TX_TYPE_STANDARD, txid, type Transaction } from './transaction.js';
+import { verifySiglistEntry } from './signing.js';
 
 // A synthetic 33-byte "compressed pubkey" — the script builder treats it as
 // opaque bytes, so a recognizable pattern keeps the expected hex readable.

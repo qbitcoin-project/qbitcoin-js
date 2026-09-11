@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { quoteLargeIntegers } from './jsonNumbers';
+import { quoteLargeIntegers } from './jsonNumbers.js';
 
 const parse = (text: string): unknown => JSON.parse(quoteLargeIntegers(text));
 

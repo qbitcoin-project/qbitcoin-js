@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ChainClient } from './ChainClient';
-import { ChainError } from './errors';
-import type { NodeEndpoint } from './nodes';
+import { ChainClient } from './ChainClient.js';
+import { ChainError } from './errors.js';
+import type { NodeEndpoint } from './nodes.js';
 import addressInfoFixture from './fixtures/address-info.json';
 
 const NODE_A: NodeEndpoint = {

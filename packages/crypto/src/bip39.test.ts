@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { generateMnemonic, mnemonicToSeed, validateMnemonic } from './bip39';
-import { toHex } from './encoding/hex';
+import { generateMnemonic, mnemonicToSeed, validateMnemonic } from './bip39.js';
+import { toHex } from './encoding/hex.js';
 
 // Test vectors from Trezor's BIP-39 canonical test suite (passphrase = "TREZOR").
 // https://github.com/trezor/python-mnemonic/blob/master/vectors.json

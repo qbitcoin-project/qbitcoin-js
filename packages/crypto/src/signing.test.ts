@@ -1,25 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { ALGO_ID, SIGHASH } from './constants';
-import { fromHex, toHex } from './encoding/hex';
+import { ALGO_ID, SIGHASH } from './constants.js';
+import { fromHex, toHex } from './encoding/hex.js';
 import {
   FALCON512_SEED_BYTES,
   falcon512KeygenFromSeed,
-} from './falcon512';
-import { getPublicKey } from './secp256k1';
+} from './falcon512.js';
+import { getPublicKey } from './secp256k1.js';
 import {
   decodeSiglistEntry,
   encodeSiglistEntry,
   signTransaction,
   signWithAlgorithm,
   verifySiglistEntry,
-} from './signing';
-import { scriptP2PK } from './script';
+} from './signing.js';
+import { scriptP2PK } from './script.js';
 import {
   TX_TYPE_STANDARD,
   serialize,
   sighash,
   type Transaction,
-} from './transaction';
+} from './transaction.js';
 
 // Reuse the mainnet vector for tx shape; we ignore its real siglist and
 // re-sign with our own key — the focus here is the signing pipeline,

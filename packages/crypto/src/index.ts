@@ -14,25 +14,25 @@ export {
   type BoundChainCrypto,
   type ChainProfile,
   type WifVersionMap,
-} from './profile';
+} from './profile.js';
 
 // Encoding primitives.
-export { fromHex, toHex } from './encoding/hex';
+export { fromHex, toHex } from './encoding/hex.js';
 export {
   decodeVarint,
   encodeVarint,
   type VarintDecodeResult,
-} from './encoding/varint';
+} from './encoding/varint.js';
 export {
   decodeVarstr,
   encodeVarstr,
   type VarstrDecodeResult,
-} from './encoding/varstr';
+} from './encoding/varstr.js';
 export {
   decodeBase58Check,
   encodeBase58Check,
   type Base58CheckDecodeResult,
-} from './encoding/base58check';
+} from './encoding/base58check.js';
 
 // Hash primitives.
 export {
@@ -41,7 +41,7 @@ export {
   hash256,
   ripemd160,
   sha256,
-} from './hashes';
+} from './hashes.js';
 
 // BIP-39 mnemonics.
 export {
@@ -49,7 +49,7 @@ export {
   mnemonicToSeed,
   validateMnemonic,
   type MnemonicLength,
-} from './bip39';
+} from './bip39.js';
 
 // BIP-32 HD derivation (secp256k1 branch). Scheme lists live in the
 // consumer's ChainProfile; these helpers take them as parameters.
@@ -65,7 +65,7 @@ export {
   requireScheme,
   schemeById,
   type DerivationScheme,
-} from './bip32';
+} from './bip32.js';
 
 // secp256k1 primitives.
 export {
@@ -77,7 +77,7 @@ export {
   isValidPublicKey,
   sign,
   verify,
-} from './secp256k1';
+} from './secp256k1.js';
 
 // Protocol constants (identical for every chain on the protocol).
 export {
@@ -91,7 +91,7 @@ export {
   type Network,
   type DowngradeChainConfig,
   type UpgradeChainConfig,
-} from './constants';
+} from './constants.js';
 
 export {
   buildFreezeOutput,
@@ -104,7 +104,7 @@ export {
   reclaimIdFor,
   reclaimScripthash,
   signReclaimInput,
-} from './downgrade';
+} from './downgrade.js';
 
 // Script construction.
 export {
@@ -120,7 +120,7 @@ export {
   scriptP2PK,
   scriptType,
   type ScriptType,
-} from './script';
+} from './script.js';
 
 // Address encoding / decoding (magic/regex come from the ChainProfile).
 export {
@@ -132,7 +132,7 @@ export {
   type AddrMagic,
   type AddressRegex,
   type DecodedAddress,
-} from './address';
+} from './address.js';
 
 // Account xpub — classical watch-only derivation (public CKD from an account key).
 export {
@@ -140,7 +140,7 @@ export {
   exportAccountXpubFor,
   isValidAccountXpub,
   parseAccountXpub,
-} from './xpub';
+} from './xpub.js';
 
 // Encrypted vault primitives (KDF + AEAD).
 export {
@@ -158,7 +158,7 @@ export {
   type ScryptParams,
   type SealOptions,
   type VaultBlob,
-} from './vault';
+} from './vault.js';
 
 // App-data encryption (at-rest, key derived from the seed — for non-key data).
 export {
@@ -167,7 +167,7 @@ export {
   openAppData,
   sealAppData,
   type AppDataBlob,
-} from './appData';
+} from './appData.js';
 
 // Transaction model & serialization.
 export {
@@ -184,7 +184,7 @@ export {
   type Transaction,
   type TxInput,
   type TxOutput,
-} from './transaction';
+} from './transaction.js';
 
 // Transaction signing.
 export {
@@ -194,7 +194,7 @@ export {
   signWithAlgorithm,
   verifySiglistEntry,
   type SigningInput,
-} from './signing';
+} from './signing.js';
 
 // Signed messages (canonical format; the magic comes from the ChainProfile).
 export {
@@ -202,14 +202,14 @@ export {
   signedMessageDigest,
   signedMessagePreimage,
   verifyMessage,
-} from './signedMessage';
+} from './signedMessage.js';
 
 // HD → Falcon-512 post-quantum derivation (purpose 512' branch).
 export {
   PURPOSE_FALCON512,
   deriveFalconKeypair,
   nativePqPathFor,
-} from './falconHd';
+} from './falconHd.js';
 
 // Schnorr (BIP-340) primitives + the feature gate for offering it.
 export {
@@ -219,12 +219,12 @@ export {
   schnorrGetPublicKey,
   schnorrSign,
   schnorrVerify,
-} from './schnorr';
+} from './schnorr.js';
 export {
   SchnorrDisabledError,
   isSchnorrEnabled,
   setSchnorrEnabled,
-} from './features';
+} from './features.js';
 
 // WIF private-key import/export (node-compatible envelope).
 export {
@@ -235,7 +235,7 @@ export {
   encodeWif,
   falconKeypairFromWifPayload,
   type DecodedWif,
-} from './wif';
+} from './wif.js';
 
 // Bitcoin addresses (upgrade flow: staging display + Return BTC decode).
 export {
@@ -249,13 +249,13 @@ export {
   type BtcAddressKind,
   type BtcNetwork,
   type DecodedBtcAddress,
-} from './btc/address';
+} from './btc/address.js';
 
 // The federated P2SH-P2WSH multisig (upgrade flow: the BTC lock address).
 export {
   btcP2shP2wshMultisig,
   type BtcMultisigLock,
-} from './btc/multisig';
+} from './btc/multisig.js';
 
 // Bitcoin transaction construction (upgrade flow: staging → lock spend).
 export {
@@ -274,7 +274,7 @@ export {
   type BtcTxInput,
   type BtcTxOutput,
   type UnsignedBtcSpend,
-} from './btc/tx';
+} from './btc/tx.js';
 
 // Falcon-512 (WASM-backed once built).
 export {
@@ -290,4 +290,4 @@ export {
   setFalcon512WasmSource,
   type Falcon512Keypair,
   type Falcon512WasmSource,
-} from './falcon512';
+} from './falcon512.js';

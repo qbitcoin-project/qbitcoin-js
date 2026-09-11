@@ -8,13 +8,13 @@
 // but off until cross-checked against a live node. Verification is not
 // gated — incoming network data may already carry Schnorr signatures.
 
-import { ALGO_ID, type Algorithm, SIGHASH } from './constants';
-import * as falcon from './falcon512';
-import { SchnorrDisabledError, isSchnorrEnabled } from './features';
-import * as schnorr from './schnorr';
-import { scriptP2PK } from './script';
-import * as ecdsa from './secp256k1';
-import { sighash, type Transaction, type TxInput } from './transaction';
+import { ALGO_ID, type Algorithm, SIGHASH } from './constants.js';
+import * as falcon from './falcon512.js';
+import { SchnorrDisabledError, isSchnorrEnabled } from './features.js';
+import * as schnorr from './schnorr.js';
+import { scriptP2PK } from './script.js';
+import * as ecdsa from './secp256k1.js';
+import { sighash, type Transaction, type TxInput } from './transaction.js';
 
 /**
  * Encode a signature into a siglist entry as the node expects:

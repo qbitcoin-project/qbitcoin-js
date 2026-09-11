@@ -38,13 +38,13 @@ import {
   derivePath,
   type DerivationScheme,
   type HDKey,
-} from './bip32';
-import type { Network } from './constants';
+} from './bip32.js';
+import type { Network } from './constants.js';
 import {
   FALCON512_SEED_BYTES,
   falcon512KeygenFromSeed,
   type Falcon512Keypair,
-} from './falcon512';
+} from './falcon512.js';
 
 /** BIP-43 purpose for the Falcon-512 branch. Project-defined (there is
  *  no BIP for PQ derivation); 512 is self-documenting. The classical
