@@ -274,6 +274,35 @@ export interface NodeStatus {
   readonly btcHeaders?: number;
   /** Height of the last fully SCANNED BTC block — credits require the scan. */
   readonly btcScanned?: number;
+  /**
+   * Exact scriptPubKey (lowercase hex) of the BTC lock output the node
+   * credits conversions for. Compare it with the value pinned in your own
+   * chain parameters BEFORE showing a deposit address, and refuse on any
+   * mismatch — a client carrying stale constants would otherwise send
+   * bitcoin to a pool the node no longer watches. Upgrade-capable nodes
+   * only.
+   */
+  readonly btcLockScriptHex?: string;
+  /** The same lock output as a Bitcoin address, for display. */
+  readonly btcUpgradeAddress?: string;
+  /** Cumulative BTC locked through the upgrade flow, in satoshi. */
+  readonly btcUpgraded?: bigint;
+  /** Cumulative BTC released through the downgrade flow, in satoshi. */
+  readonly btcDowngraded?: bigint;
+  /** Cumulative native coins minted by conversions, in atomic units. */
+  readonly minted?: bigint;
+  /** Cumulative native coins burned by conversions, in atomic units. */
+  readonly burned?: bigint;
+  /** Hash of the best block (lowercase hex). */
+  readonly bestBlockHash?: string;
+  /** Timestamp of the best block, unix seconds. */
+  readonly bestBlockTime?: number;
+  /** Genesis timestamp, unix seconds. */
+  readonly genesisTime?: number;
+  /** Transactions waiting in the node's mempool. */
+  readonly mempoolSize?: number;
+  /** Their total size in bytes. */
+  readonly mempoolBytes?: number;
 }
 
 // ─── Broadcast result ────────────────────────────────────────────────

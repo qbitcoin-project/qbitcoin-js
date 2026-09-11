@@ -333,10 +333,12 @@ export class EsploraClient {
 
   // ─── Status ────────────────────────────────────────────────────────
 
-  /** `GET /api/status` → node sync state (chain, height, syncing). The node
-   *  exposes this on both the public and a self-hosted endpoint. */
+  /** `GET /api/status` → node sync state (chain, height, syncing) plus, on
+   *  upgrade-capable nodes, the conversion pool's identity and running
+   *  totals. The node exposes this on both the public and a self-hosted
+   *  endpoint. */
   async getNodeStatus(): Promise<NodeStatus> {
-    const raw = await request<{ chain?: unknown; blocks?: unknown; initialblockdownload?: unknown; total_coins?: unknown; btc_synced?: unknown; btc_headers?: unknown; btc_scanned?: unknown }>(
+    const raw = await request<Record<string, unknown>>(
       { url: `${this.endpoint.url}/api/status`, expect: 'json' },
       this.transportOpts,
     );
@@ -353,6 +355,23 @@ export class EsploraClient {
       // trail the headers by a lot — surface both so the UI can show the lag.
       ...(typeof raw.btc_headers === 'number' && Number.isFinite(raw.btc_headers) ? { btcHeaders: raw.btc_headers } : {}),
       ...(typeof raw.btc_scanned === 'number' && Number.isFinite(raw.btc_scanned) ? { btcScanned: raw.btc_scanned } : {}),
+      // The conversion pool and its running totals. Absent on nodes without
+      // upgrade support; when present they MUST parse — a node emitting
+      // garbage in a consensus-relevant field is an error to surface, not a
+      // field to drop (dropping would turn a consumer's lock-script check
+      // into "nothing to compare").
+      ...statusField(raw, 'btc_lock_script', 'btcLockScriptHex', requireHex),
+      ...statusField(raw, 'btc_upgrade_addr', 'btcUpgradeAddress', requireNonEmptyString),
+      ...statusField(raw, 'btc_upgraded', 'btcUpgraded', parseCumulativeSat),
+      ...statusField(raw, 'btc_downgraded', 'btcDowngraded', parseCumulativeSat),
+      ...statusField(raw, 'minted', 'minted', parseCumulativeSat),
+      ...statusField(raw, 'burned', 'burned', parseCumulativeSat),
+      // Chain and mempool telemetry.
+      ...statusField(raw, 'bestblockhash', 'bestBlockHash', (v, f) => requireHex(v, f, 32)),
+      ...statusField(raw, 'bestblocktime', 'bestBlockTime', requireInt),
+      ...statusField(raw, 'genesistime', 'genesisTime', requireInt),
+      ...statusField(raw, 'mempool_size', 'mempoolSize', requireInt),
+      ...statusField(raw, 'mempool_bytes', 'mempoolBytes', requireInt),
     };
   }
 
@@ -805,6 +824,41 @@ function requireString(v: unknown, field: string): string {
     );
   }
   return v;
+}
+
+function requireNonEmptyString(v: unknown, field: string): string {
+  const s = requireString(v, field);
+  if (s.length === 0) {
+    throw new ChainError('malformed_response', `Field '${field}' is empty`);
+  }
+  return s;
+}
+
+/** Non-empty, even-length hex, returned lowercase (hex case carries no
+ *  meaning, and consumers compare these values byte for byte against their
+ *  own pins). `bytes` pins an exact length where the format has one. */
+function requireHex(v: unknown, field: string, bytes?: number): string {
+  const s = requireString(v, field);
+  const lengthOk = bytes === undefined ? s.length > 0 && s.length % 2 === 0 : s.length === bytes * 2;
+  if (!lengthOk || !/^[0-9a-fA-F]+$/.test(s)) {
+    throw new ChainError(
+      'malformed_response',
+      `Field '${field}' is not ${bytes === undefined ? '' : `${bytes}-byte `}hex: ${s}`,
+    );
+  }
+  return s.toLowerCase();
+}
+
+/** Optional `/api/status` field: absent → contributes nothing; present →
+ *  parsed with the given parser, which throws on malformed input. */
+function statusField<K extends string, T>(
+  raw: Record<string, unknown>,
+  key: string,
+  out: K,
+  parse: (v: unknown, field: string) => T,
+): Partial<Record<K, T>> {
+  const v = raw[key];
+  return v === undefined ? {} : ({ [out]: parse(v, key) } as Record<K, T>);
 }
 
 function requireInt(v: unknown, field: string): number {

@@ -50,6 +50,7 @@ const utxos = await client.listUnspent('<address>');
 const tx    = await client.getTransaction('<txid>');
 const fees  = await client.getFeeEstimates();
 const tip   = await client.getBlockchainInfo();
+const node  = await client.getNodeStatus();
 
 // Write
 const { txid, endpoint } = await client.broadcastTransaction(signedHex);
@@ -97,6 +98,43 @@ new ChainClient({
   transport: { timeoutMs: 15_000, maxRetries: 2, backoffMs: 250 },
 });
 ```
+
+## Node status
+
+`getNodeStatus()` maps the node's `/api/status` onto `NodeStatus`. The
+sync fields are always present; everything about BTC conversion is
+optional and simply absent on nodes without upgrade support:
+
+| Field | Meaning |
+|---|---|
+| `chain`, `blocks`, `initialBlockDownload` | chain name, best height, still syncing |
+| `bestBlockHash`, `bestBlockTime`, `genesisTime` | tip identity and timestamps (unix seconds) |
+| `mempoolSize`, `mempoolBytes` | pending transactions and their size |
+| `totalCoins` | circulating supply, atomic units |
+| `btcSynced`, `btcHeaders`, `btcScanned` | Bitcoin-side sync: credits require the *scanned* height, which can trail the headers |
+| `btcLockScriptHex`, `btcUpgradeAddress` | the BTC lock output the node credits conversions for — as scriptPubKey hex (lowercase) and as an address |
+| `btcUpgraded`, `btcDowngraded` | cumulative BTC locked and released, satoshi |
+| `minted`, `burned` | cumulative native coins created and destroyed by conversions |
+
+All running totals are `bigint`; they grow without bound and are parsed
+exactly whether the node sends numbers or digit strings.
+
+**Check the lock script before you use it.** A client that ships the lock
+script as a constant should compare it with what the node reports and
+refuse to show a deposit address on any mismatch — a stale constant would
+send bitcoin to an output the node no longer credits:
+
+```ts
+const status = await client.getNodeStatus();
+if (status.btcLockScriptHex !== MY_CHAIN.upgrade.mainnet.lockScriptHex) {
+  throw new Error('lock script mismatch: refusing to build a deposit');
+}
+```
+
+When a status field is present but malformed, the call fails with
+`ChainError('malformed_response')` instead of silently omitting the
+field — a node emitting garbage in a consensus-relevant field must be
+visible, not mistaken for one that does not report it.
 
 ## Tests
 

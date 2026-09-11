@@ -6,6 +6,7 @@ import addressInfoFixture from './fixtures/address-info.json';
 import utxosFixture from './fixtures/utxos.json';
 import txFixture from './fixtures/tx.json';
 import feesFixture from './fixtures/fee-estimates.json';
+import statusFixture from './fixtures/status.json';
 
 const ENDPOINT: NodeEndpoint = {
   name: 'Test',
@@ -536,9 +537,77 @@ describe('EsploraClient.getNodeStatus', () => {
     const withFlag = await client.getNodeStatus();
     expect(withFlag.blocks).toBe(123);
     expect(withFlag.btcSynced).toBe(false);
-    // …a node without upgrade support simply doesn't report it.
+    // …a node without upgrade support simply doesn't report it, nor any of
+    // the conversion-pool fields.
     const withoutFlag = await client.getNodeStatus();
     expect(withoutFlag.btcSynced).toBeUndefined();
+    expect(withoutFlag.btcLockScriptHex).toBeUndefined();
+    expect(withoutFlag.btcUpgraded).toBeUndefined();
+    expect(withoutFlag.bestBlockHash).toBeUndefined();
+  });
+
+  it('parses the conversion pool, its running totals and the chain telemetry', async () => {
+    const client = makeClient(vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(statusFixture)));
+    const status = await client.getNodeStatus();
+    expect(status.chain).toBe('testnet');
+    expect(status.blocks).toBe(4321);
+    expect(status.btcSynced).toBe(true);
+    expect(status.btcHeaders).toBe(150_000);
+    expect(status.btcScanned).toBe(149_990);
+    expect(status.btcLockScriptHex).toBe('a914' + '11'.repeat(20) + '87');
+    expect(status.btcUpgradeAddress).toBe('addr-pool');
+    expect(status.btcUpgraded).toBe(900_000_000n);
+    expect(status.btcDowngraded).toBe(40_000_000n);
+    expect(status.minted).toBe(900_000_000n);
+    expect(status.burned).toBe(40_000_000n);
+    expect(status.totalCoins).toBe(860_000_000n);
+    // The supply identity the node maintains.
+    expect(status.minted! - status.burned!).toBe(status.totalCoins);
+    expect(status.bestBlockHash).toBe('ab'.repeat(32));
+    expect(status.bestBlockTime).toBe(1_700_000_000);
+    expect(status.genesisTime).toBe(1_600_000_000);
+    expect(status.mempoolSize).toBe(3);
+    expect(status.mempoolBytes).toBe(640);
+    // Fields without a documented unit stay out of the typed contract.
+    expect(status).not.toHaveProperty('reward');
+    expect(status).not.toHaveProperty('weight');
+  });
+
+  it('keeps running totals exact when the node serializes them as digit strings', async () => {
+    // Beyond 2^53 the transport quotes the digits, so they arrive as
+    // strings; the cumulative parser must keep every digit.
+    const body = { ...statusFixture, btc_upgraded: '18446744073709551616', minted: '18446744073709551616' };
+    const client = makeClient(vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(body)));
+    const status = await client.getNodeStatus();
+    expect(status.btcUpgraded).toBe(2n ** 64n);
+    expect(status.minted).toBe(2n ** 64n);
+  });
+
+  it('lowercases the lock script so consumers can compare it byte for byte', async () => {
+    const body = { ...statusFixture, btc_lock_script: 'A914' + 'AB'.repeat(20) + '87', bestblockhash: 'CD'.repeat(32) };
+    const client = makeClient(vi.fn<typeof fetch>().mockResolvedValue(jsonResponse(body)));
+    const status = await client.getNodeStatus();
+    expect(status.btcLockScriptHex).toBe('a914' + 'ab'.repeat(20) + '87');
+    expect(status.bestBlockHash).toBe('cd'.repeat(32));
+  });
+
+  it.each([
+    ['odd-length lock script', { btc_lock_script: 'a914' + '11'.repeat(20) + '8' }],
+    ['non-hex lock script', { btc_lock_script: 'zz14' + '11'.repeat(20) + '87' }],
+    ['empty lock script', { btc_lock_script: '' }],
+    ['non-string pool address', { btc_upgrade_addr: 42 }],
+    ['empty pool address', { btc_upgrade_addr: '' }],
+    ['negative running total', { btc_upgraded: -1 }],
+    ['non-numeric running total', { minted: 'abc' }],
+    ['fractional running total', { burned: 1.5 }],
+    ['short best block hash', { bestblockhash: 'ab'.repeat(31) }],
+    ['non-integer mempool size', { mempool_size: 'many' }],
+  ])('throws malformed_response on %s rather than dropping the field', async (_label, patch) => {
+    const client = makeClient(vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({ ...statusFixture, ...patch })));
+    await expect(client.getNodeStatus()).rejects.toMatchObject({
+      name: 'ChainError',
+      code: 'malformed_response',
+    });
   });
 });
 

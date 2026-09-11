@@ -1,0 +1,22 @@
+{
+  "blocks": 4321,
+  "initialblockdownload": false,
+  "btc_upgrade_addr": "addr-pool",
+  "btc_headers": 150000,
+  "burned": 40000000,
+  "btc_downgraded": 40000000,
+  "mempool_size": 3,
+  "btc_upgraded": 900000000,
+  "minted": 900000000,
+  "btc_synced": true,
+  "total_coins": 860000000,
+  "bestblocktime": 1700000000,
+  "chain": "testnet",
+  "reward": 500,
+  "btc_scanned": 149990,
+  "btc_lock_script": "a914111111111111111111111111111111111111111187",
+  "genesistime": 1600000000,
+  "mempool_bytes": 640,
+  "weight": 12345678901,
+  "bestblockhash": "abababababababababababababababababababababababababababababababab"
+}
