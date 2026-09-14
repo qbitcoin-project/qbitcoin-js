@@ -3,7 +3,7 @@
 TypeScript building blocks for wallets and tools on the **QBitcoin
 protocol** — a Bitcoin-derived UTXO chain that pairs classical secp256k1
 with post-quantum **Falcon-512** signatures. The packages implement the
-protocol's cryptography and its node client once, so that every wallet,
+protocol's cryptography, node client and seed vault once, so that every wallet,
 web tool or service built on the chain shares a single, tested
 implementation instead of carrying its own copy.
 
@@ -11,6 +11,7 @@ implementation instead of carrying its own copy.
 |---|---|
 | [`@qbtc/crypto`](packages/crypto) | Keys, addresses and signatures: BIP-39/32 derivation for both signature families, address and script codecs, transaction serialization and signing, the canonical signed-message format, WIF, vault sealing, and the Bitcoin-side builders for the BTC ↔ QBTC conversion flows. |
 | [`@qbtc/chain`](packages/chain) | The node's Esplora-compatible REST API as typed clients: balances, UTXOs, transactions, fee estimates, broadcast, failover across nodes — plus a thin client for public Bitcoin explorers. |
+| [`@qbtc/vault`](packages/vault) | Password-protected seed storage: lock/unlock, lifecycle events, password changes and encrypted application data, with host-supplied storage. |
 
 ## Why
 
@@ -41,6 +42,9 @@ sharing them safe:
 ```bash
 pnpm add @qbtc/crypto @qbtc/chain
 ```
+
+A wallet that keeps a seed adds [`@qbtc/vault`](packages/vault/README.md)
+on top; it uses the same `@qbtc/crypto` copy as a peer dependency.
 
 Declare your chain once, then use the bound facade everywhere:
 
@@ -83,11 +87,12 @@ Every function behind the facade is also exported in a pure form that
 takes the chain values as explicit parameters — the facade is
 convenience, not a requirement. The full API is documented per package:
 [`@qbtc/crypto`](packages/crypto/README.md),
-[`@qbtc/chain`](packages/chain/README.md).
+[`@qbtc/chain`](packages/chain/README.md),
+[`@qbtc/vault`](packages/vault/README.md).
 
 ## Design
 
-- **Pure ESM, side-effect free.** Both packages declare
+- **Pure ESM, side-effect free.** All packages declare
   `"sideEffects": false`, so bundlers drop whatever you don't import. A
   page that needs only addresses, WIF and Bitcoin transactions bundles to
   about 47 KB minified with no Falcon code at all — the WASM glue is
@@ -133,13 +138,14 @@ Repository layout:
 ```
 packages/crypto/        @qbtc/crypto
 packages/chain/         @qbtc/chain
+packages/vault/         @qbtc/vault
 tools/falcon512-wasm/   reproducible build of the Falcon-512 WASM artifact
 ```
 
 ## Releases
 
 Packages are versioned independently (semver) and published to npm from
-CI on tags — `crypto-vX.Y.Z` and `chain-vX.Y.Z` — with npm provenance,
+CI on tags — `crypto-vX.Y.Z`, `chain-vX.Y.Z` and `vault-vX.Y.Z` — with npm provenance,
 so every published tarball is traceable to a commit in this repository.
 Pin exact versions in consumers. For local cross-repo work, point at a
 checkout with a pnpm override:

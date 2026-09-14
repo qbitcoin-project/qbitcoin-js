@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "paths": {
+      "@qbtc/crypto": [
+        "../crypto/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "vitest.config.ts"
+  ]
+}

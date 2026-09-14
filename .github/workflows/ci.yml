@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
-    tags: ['crypto-v*', 'chain-v*']
+    tags: ['crypto-v*', 'chain-v*', 'vault-v*']
   pull_request:
 
 jobs:
@@ -80,5 +80,34 @@ jobs:
       - name: Publish @qbtc/chain
         run: npm publish --provenance
         working-directory: packages/chain
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Same release shape for @qbtc/vault: tag vault-vX.Y.Z.
+  publish-vault:
+    needs: check
+    if: startsWith(github.ref, 'refs/tags/vault-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance attestation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+      - run: pnpm install --frozen-lockfile
+      - name: Verify tag matches the package version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#vault-v}"
+          PKG_VERSION="$(node -p "require('./packages/vault/package.json').version")"
+          test "$TAG_VERSION" = "$PKG_VERSION" || { echo "tag $GITHUB_REF_NAME != package version $PKG_VERSION"; exit 1; }
+      - run: pnpm --filter @qbtc/vault... build # build workspace dependencies before the vault
+      - name: Publish @qbtc/vault
+        run: npm publish --provenance
+        working-directory: packages/vault
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
