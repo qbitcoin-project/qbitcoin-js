@@ -11,7 +11,7 @@ export class WalletLockedError extends Error {
   }
 }
 
-/** Raised when `unlock(password)` or `changePassword(old, _)` is called
+/** Raised when `unlock`, `revealMnemonic` or `changePassword` is called
  *  with the wrong password. Deliberately indistinguishable from a
  *  ciphertext-tampered case to avoid leaking timing info. */
 export class InvalidPasswordError extends Error {
@@ -50,9 +50,10 @@ export class VaultEmptyError extends Error {
   }
 }
 
-/** Raised when unlock attempts are temporarily throttled after repeated wrong
- *  passwords (defence-in-depth on top of the KDF cost). `retryAfterMs` is how
- *  long the caller should wait before trying again. */
+/** Raised when password checks in `unlock`, `revealMnemonic` or
+ *  `changePassword` are temporarily throttled after repeated wrong passwords.
+ *  The existing name is retained for compatibility. `retryAfterMs` is how long
+ *  the caller should wait before trying again (defence-in-depth over the KDF). */
 export class UnlockThrottledError extends Error {
   override readonly name = 'UnlockThrottledError';
   readonly retryAfterMs: number;

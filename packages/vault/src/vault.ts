@@ -34,14 +34,14 @@ import type { VaultStorage } from './storage.js';
 /** Default autolock — 5 minutes of inactivity. */
 const DEFAULT_AUTO_LOCK_MS = 5 * 60 * 1000;
 
-// Unlock throttle (defence-in-depth on top of the Argon2id KDF). The first few
+// Password throttle (defence-in-depth on top of the Argon2id KDF). The first few
 // wrong passwords are free — fat-fingering a strong password is normal — after
 // which a mandatory cooldown grows per failure, capped. In-memory only: it resets
 // on app restart, so the KDF cost stays the real brute-force barrier; this just
-// blunts rapid repeated guessing within a running session.
-const UNLOCK_FREE_ATTEMPTS = 3;
-const UNLOCK_BACKOFF_BASE_MS = 1000;
-const UNLOCK_BACKOFF_MAX_MS = 30_000;
+// blunts repeated guessing across unlock, reveal and password changes.
+const PASSWORD_FREE_ATTEMPTS = 3;
+const PASSWORD_BACKOFF_BASE_MS = 1000;
+const PASSWORD_BACKOFF_MAX_MS = 30_000;
 
 export interface VaultConfig {
   /**
@@ -90,10 +90,10 @@ export class Vault {
   private readonly listeners: Set<VaultListener> = new Set();
   private readonly autoLockMs: number;
   private readonly appDataInfo: string;
-  // Unlock-throttle state (in-memory): consecutive wrong-password count and the
-  // timestamp until which further unlock attempts are refused.
-  private failedUnlocks = 0;
-  private unlockBlockedUntil = 0;
+  // Shared password-throttle state (in-memory): consecutive authentication
+  // failures and the timestamp until which password checks are refused.
+  private failedPasswordAttempts = 0;
+  private passwordBlockedUntil = 0;
   private generation = 0;
   private pending: Promise<void> = Promise.resolve();
 
@@ -167,7 +167,9 @@ export class Vault {
    * (handy for "user is active" pings).
    *
    * Throws `VaultEmptyError` if there's no vault, `InvalidPasswordError`
-   * on wrong password or tampered ciphertext.
+   * on wrong password or tampered ciphertext, `UnlockThrottledError` during
+   * the shared password cooldown. An already-unlocked call does not check
+   * the password and does not reset the throttle.
    */
   async unlock(password: string): Promise<void> {
     return this.inSession(async (check) => {
@@ -178,27 +180,11 @@ export class Vault {
       const stored = await this.store.read();
       check();
       if (stored === null) throw new VaultEmptyError();
-      const wait = this.unlockBlockedUntil - Date.now();
-      if (wait > 0) throw new UnlockThrottledError(wait);
-
       const blob = parseBlob(stored);
-      let decrypted: Uint8Array;
-      try {
-        decrypted = await unsealVault(blob, password);
-      } catch (e) {
-        // A wrong password counts toward the throttle even if a lock landed
-        // mid-attempt: nothing is being installed here, so there is no
-        // generation to protect, and skipping the count would let interleaved
-        // lock/unlock calls disarm the backoff.
-        if (e instanceof VaultAuthError) {
-          this.registerFailedUnlock();
-          throw new InvalidPasswordError();
-        }
-        throw e;
-      }
+      const decrypted = await this.decryptMnemonic(blob, password);
       try {
         check();
-        this.resetUnlockThrottle();
+        this.resetPasswordThrottle();
         // Keep legacy data readable if its best-effort upgrade cannot be saved.
         if (blob.kdf !== CURRENT_KDF) {
           try {
@@ -245,9 +231,11 @@ export class Vault {
     this.generation += 1;
     this.stopTimer();
     this.wipeSecrets();
-    this.resetUnlockThrottle();
     return this.enqueue(async () => {
       await this.store.clear();
+      // Reset only after deletion succeeds and earlier checks have settled.
+      // A failed clear must not reopen guesses against the existing blob.
+      this.resetPasswordThrottle();
       this.emit({ type: 'destroyed' });
     });
   }
@@ -291,7 +279,8 @@ export class Vault {
    * stored here.
    *
    * Throws `WalletLockedError` if locked, `VaultEmptyError` if there's no
-   * vault, `InvalidPasswordError` on a wrong password.
+   * vault, `InvalidPasswordError` on a wrong password, or
+   * `UnlockThrottledError` during the shared password cooldown.
    */
   async revealMnemonic(password: string): Promise<string> {
     if (this.masterSeed === null) throw new WalletLockedError();
@@ -299,9 +288,10 @@ export class Vault {
       const stored = await this.store.read();
       check();
       if (stored === null) throw new VaultEmptyError();
-      const decrypted = await decryptMnemonic(parseBlob(stored), password);
+      const decrypted = await this.decryptMnemonic(parseBlob(stored), password);
       try {
         check();
+        this.resetPasswordThrottle();
         return new TextDecoder().decode(decrypted);
       } finally {
         decrypted.fill(0);
@@ -356,7 +346,8 @@ export class Vault {
    * or unlocked (not empty). Works whether or not the vault is
    * currently unlocked — the unlocked state is preserved.
    *
-   * Throws `InvalidPasswordError` on wrong old password.
+   * Throws `InvalidPasswordError` on wrong old password, or
+   * `UnlockThrottledError` during the shared password cooldown.
    */
   async changePassword(
     oldPassword: string,
@@ -366,9 +357,10 @@ export class Vault {
       const stored = await this.store.read();
       check();
       if (stored === null) throw new VaultEmptyError();
-      const decrypted = await decryptMnemonic(parseBlob(stored), oldPassword);
+      const decrypted = await this.decryptMnemonic(parseBlob(stored), oldPassword);
       try {
         check();
+        this.resetPasswordThrottle();
         const newBlob = await sealVault(decrypted, newPassword);
         check();
         await this.store.write(serializeBlob(newBlob));
@@ -421,20 +413,40 @@ export class Vault {
     if (generation !== this.generation) throw new WalletLockedError();
   }
 
-  // Count a wrong-password attempt and, past the free allowance, open a cooldown
-  // window that grows per failure (capped). See the UNLOCK_* constants.
-  private registerFailedUnlock(): void {
-    this.failedUnlocks += 1;
-    if (this.failedUnlocks > UNLOCK_FREE_ATTEMPTS) {
-      const over = this.failedUnlocks - UNLOCK_FREE_ATTEMPTS; // 1, 2, 3, …
-      const backoff = Math.min(UNLOCK_BACKOFF_BASE_MS * 2 ** (over - 1), UNLOCK_BACKOFF_MAX_MS);
-      this.unlockBlockedUntil = Date.now() + backoff;
+  // Called only inside the serialized session queue. Check the shared
+  // cooldown immediately before the KDF, not when the request is enqueued.
+  // Callers own the returned buffer and reset the throttle only after their
+  // generation check succeeds; a cancelled success must not clear failures.
+  private async decryptMnemonic(blob: VaultBlob, password: string): Promise<Uint8Array> {
+    const wait = this.passwordBlockedUntil - Date.now();
+    if (wait > 0) throw new UnlockThrottledError(wait);
+    try {
+      return await unsealVault(blob, password);
+    } catch (e) {
+      // Count an authentication failure even if lock() cancelled its session.
+      // Otherwise interleaving locks with password checks could evade backoff.
+      if (e instanceof VaultAuthError) {
+        this.registerFailedPassword();
+        throw new InvalidPasswordError();
+      }
+      throw e;
     }
   }
 
-  private resetUnlockThrottle(): void {
-    this.failedUnlocks = 0;
-    this.unlockBlockedUntil = 0;
+  // Count a wrong-password attempt and, past the free allowance, open a cooldown
+  // window that grows per failure (capped). See the PASSWORD_* constants.
+  private registerFailedPassword(): void {
+    this.failedPasswordAttempts += 1;
+    if (this.failedPasswordAttempts > PASSWORD_FREE_ATTEMPTS) {
+      const over = this.failedPasswordAttempts - PASSWORD_FREE_ATTEMPTS; // 1, 2, 3, …
+      const backoff = Math.min(PASSWORD_BACKOFF_BASE_MS * 2 ** (over - 1), PASSWORD_BACKOFF_MAX_MS);
+      this.passwordBlockedUntil = Date.now() + backoff;
+    }
+  }
+
+  private resetPasswordThrottle(): void {
+    this.failedPasswordAttempts = 0;
+    this.passwordBlockedUntil = 0;
   }
 
   private wipeSecrets(): void {
@@ -500,13 +512,4 @@ function parseBlob(serialized: string): VaultBlob {
     }
   }
   return value as VaultBlob;
-}
-
-async function decryptMnemonic(blob: VaultBlob, password: string): Promise<Uint8Array> {
-  try {
-    return await unsealVault(blob, password);
-  } catch (e) {
-    if (e instanceof VaultAuthError) throw new InvalidPasswordError();
-    throw e;
-  }
 }

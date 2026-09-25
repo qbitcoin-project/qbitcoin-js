@@ -1,6 +1,6 @@
 {
   "name": "@qbtc/vault",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "description": "Password-protected BIP-39 seed storage with locking, lifecycle events and encrypted application data. Storage and application-specific parameters are supplied by the consumer.",
   "license": "MIT",

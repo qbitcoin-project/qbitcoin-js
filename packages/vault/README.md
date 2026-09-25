@@ -86,6 +86,38 @@ Exported errors: `WalletLockedError`, `InvalidPasswordError`,
 data may also raise `VaultFormatError` or `AppDataError` from `@qbtc/crypto`.
 Storage errors propagate unchanged, except for a best-effort KDF upgrade.
 
+## Password attempt limits
+
+`unlock`, `revealMnemonic` and `changePassword` share one failure counter
+and cooldown in each Vault instance. The first three authentication failures
+have no added delay. After the fourth failure, the cooldown is one second;
+further failures increase it to 2, 4, 8, 16 and then at most 30 seconds.
+Each failure still rejects with `InvalidPasswordError`. During the cooldown,
+password checks reject with `UnlockThrottledError`, including checks of the
+correct password. Its `retryAfterMs` reports the remaining wait. The error
+name is retained for compatibility even for reveal and password changes.
+
+The cooldown is checked inside the operation queue before decryption.
+Requests refused during a cooldown do not run the KDF, add failures or
+extend the deadline. Switching methods, calling `lock()` or reporting
+activity does not reset the counter. An already-unlocked `unlock()` does
+not verify a password and therefore does not reset it either.
+
+A successful password check resets the counter after the session checkpoint,
+even if a later password-change write fails. A successful decryption cancelled
+by a lock does not reset it. An authentication failure still counts if a lock
+arrives during the check; queued requests cancelled before checking a password
+do not count. Storage, format and unrelated crypto errors do not count as
+incorrect passwords. Successful destruction resets the counter after storage
+is cleared; a failed deletion keeps the throttle for the existing blob.
+
+The counter is in memory only: a new instance or process restart resets it.
+It does not protect a copied blob from offline guessing or prevent a caller
+from modifying the implementation. A strong password and the KDF cost remain
+the protection against offline guessing. Keep the Vault instance alive across
+UI sessions; creating one instance per request defeats both throttling and
+the serialized operation queue.
+
 ## Autolock and platform integration
 
 The internal timer defaults to five minutes. Only explicit activity and
@@ -143,10 +175,10 @@ to the application's wallet model.
 - Mnemonic and app-data byte buffers owned by this layer are wiped on
   completion and failure. JavaScript strings and runtime-internal copies
   cannot be guaranteed erased.
-- Throttling applies to failed `unlock` attempts in the current instance:
-  after the fourth failure, cooldown starts at one second and increases
-  to thirty seconds. It resets on successful unlock or destruction. It
-  does not cover reveal/change-password requests or offline guessing.
+- Password attempt limits are shared by unlock, reveal and password changes
+  within one instance; they do not cover offline guessing. See the limits
+  and reset behavior above. Hosts should handle `UnlockThrottledError` for
+  all three methods and preserve `retryAfterMs` across their IPC boundary.
 - Password-strength requirements and request authorization belong to the
   host. This package does not enforce a password minimum.
 - The storage adapter is a trusted persistence boundary, not an arbitrary
