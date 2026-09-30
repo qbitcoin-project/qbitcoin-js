@@ -768,3 +768,94 @@ describe('EsploraClient.getOutspend', () => {
     expect(String(fetchImpl.mock.calls[0]?.[0])).toContain(`/api/tx/${'ab'.repeat(32)}/outspend/0`);
   });
 });
+
+
+describe('EsploraClient — stake fees', () => {
+  const stake = {
+    txid: 'aa'.repeat(32),
+    tx_type: 'stake',
+    vin: [{ txid: 'bb'.repeat(32), vout: 1, prevout: { value: 1_000_000_000, scripthash_address: 'addr-staker' } }],
+    vout: [
+      { scripthash: 'cc', scripthash_address: 'addr-reward', value: 126 },
+      { scripthash: 'dd', scripthash_address: 'addr-staker', value: 1_000_000_000 },
+    ],
+    size: 200,
+    fee: -126,
+    is_coinbase: false,
+    status: { confirmed: true, block_height: 10 },
+  };
+
+  it.each([
+    { tx_type: 'stake' },
+    { tx_type: undefined, version: 2 },
+    { tx_type: 'standard', version: 2 },
+  ])('preserves signed fees for a resolved stake type %j in detail and history', async (type) => {
+    for (const fee of [-126, '-126', 0, '0', 42, '42']) {
+      const raw = { ...stake, ...type, fee };
+      const fetchImpl = vi.fn<typeof fetch>().mockImplementation(async (url) =>
+        jsonResponse(String(url).endsWith('/txs') ? [txFixture, raw] : raw),
+      );
+      const client = makeClient(fetchImpl);
+      const tx = await client.getTransaction(raw.txid);
+      expect(tx.version).toBe(2);
+      expect(tx.fee).toBe(BigInt(fee));
+      expect(tx.isCoinbase).toBe(false);
+      const txs = await client.getAddressTransactions('addr-reward');
+      expect(txs).toHaveLength(2);
+      expect(txs[0]!.fee).toBe(1000n);
+      expect(txs[1]!.fee).toBe(BigInt(fee));
+    }
+  });
+
+  it.each(['standard', 'coinbase', 'tokens', 'slashing', 'burn', 'downgrade', 'upgrade_stop', 'unknown'])(
+    'still rejects a negative fee for %s', async (tx_type) => {
+      for (const fee of [-126, '-126']) {
+        const client = makeClient(async () => jsonResponse({ ...stake, tx_type, fee }));
+        await expect(client.getTransaction(stake.txid)).rejects.toMatchObject({ code: 'malformed_response' });
+      }
+    },
+  );
+
+  it('uses numeric version before tx_type when deciding whether a fee can be negative', async () => {
+    const client = makeClient(async () => jsonResponse({ ...stake, version: 1 }));
+    await expect(client.getTransaction(stake.txid)).rejects.toMatchObject({ code: 'malformed_response' });
+  });
+
+  it.each([-1.5, '-1.5', '', ' ', '- 126', '+126', '1e3', 'NaN', null, true, undefined])(
+    'rejects an invalid stake fee %j', async (fee) => {
+      const client = makeClient(async () => jsonResponse({ ...stake, fee }));
+      await expect(client.getTransaction(stake.txid)).rejects.toMatchObject({ code: 'malformed_response' });
+    },
+  );
+
+  it.each(['-9007199254740993', '-18446744073709551615'])(
+    'keeps a large signed integer exact through the transport: %s', async (fee) => {
+      const body = JSON.stringify({ ...stake, fee });
+      for (const raw of [body, body.replace(`"fee":"${fee}"`, `"fee":${fee}`)]) {
+        const client = makeClient(async () => new Response(raw));
+        expect((await client.getTransaction(stake.txid)).fee).toBe(BigInt(fee));
+      }
+    },
+  );
+
+  it.each(['-9.007199254740992e15', '9.007199254740992e15', '-1e999'])(
+    'rejects an unsafe numeric stake fee %s', async (fee) => {
+      const body = JSON.stringify(stake).replace('"fee":-126', `"fee":${fee}`);
+      const client = makeClient(async () => new Response(body));
+      await expect(client.getTransaction(stake.txid)).rejects.toMatchObject({ code: 'malformed_response' });
+    },
+  );
+
+  it('keeps stake input, output and UTXO amounts non-negative', async () => {
+    for (const value of [-1, '-1']) {
+      const invalidInput = { ...stake, vin: [{ ...stake.vin[0], prevout: { value } }] };
+      const invalidOutput = { ...stake, vout: [{ scripthash: 'cc', value }] };
+      for (const raw of [invalidInput, invalidOutput]) {
+        const client = makeClient(async () => jsonResponse(raw));
+        await expect(client.getTransaction(stake.txid)).rejects.toMatchObject({ code: 'malformed_response' });
+      }
+      const client = makeClient(async () => jsonResponse([{ txid: stake.txid, vout: 0, value, status: stake.status }]));
+      await expect(client.listUnspent('addr-reward')).rejects.toMatchObject({ code: 'malformed_response' });
+    }
+  });
+});

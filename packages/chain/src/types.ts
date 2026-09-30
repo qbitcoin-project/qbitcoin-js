@@ -116,7 +116,8 @@ export interface ChainTx {
   readonly vout: readonly ChainTxOut[];
   /** Total size in bytes of the serialized transaction. */
   readonly size: number;
-  /** Total fee in atomic units (sum of inputs − sum of outputs). */
+  /** Total fee in atomic units (sum of inputs − sum of outputs).
+   *  Negative for a stake transaction whose outputs include a reward. */
   readonly fee: bigint;
   readonly status: ConfirmationStatus;
   /** True for the block's coinbase (block-reward) transaction. */

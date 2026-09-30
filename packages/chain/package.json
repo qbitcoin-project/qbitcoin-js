@@ -1,6 +1,6 @@
 {
   "name": "@qbtc/chain",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": false,
   "description": "Esplora-compatible chain client for wallets on the QBitcoin protocol — balance, UTXOs, fee estimates, broadcast, node failover. Ships no endpoint URLs: the consumer supplies its node list.",
   "license": "MIT",

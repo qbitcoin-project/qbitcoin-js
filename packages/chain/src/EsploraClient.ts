@@ -134,7 +134,7 @@ interface RawTx {
   readonly vin: readonly RawTxIn[];
   readonly vout: readonly RawTxOut[];
   readonly size: number;
-  readonly fee: number;
+  readonly fee: number | string;
   readonly status: RawConfirmationStatus;
   readonly is_coinbase?: boolean;
 }
@@ -671,6 +671,7 @@ function parseTx(raw: RawTx): ChainTx {
     return result;
   });
 
+  const version = parseTxVersion(raw);
   const tx: {
     txid: string;
     version: number;
@@ -685,11 +686,11 @@ function parseTx(raw: RawTx): ChainTx {
     downgradeInfo?: DowngradeInfo;
   } = {
     txid: requireString(raw.txid, 'txid'),
-    version: parseTxVersion(raw),
+    version,
     vin,
     vout,
     size: requireInt(raw.size, 'size'),
-    fee: requireBigint(raw.fee, 'fee'),
+    fee: version === 2 ? requireSignedBigint(raw.fee, 'fee') : requireBigint(raw.fee, 'fee'),
     status: parseStatus(raw.status),
   };
   if (typeof raw.is_coinbase === 'boolean') tx.isCoinbase = raw.is_coinbase;
@@ -948,6 +949,16 @@ function parseTokenInfo(raw: RawTokenInfo, fallbackId: string): TokenInfo {
   if (typeof raw.symbol === 'string') info.symbol = raw.symbol;
   if (typeof raw.create_time === 'number') info.createTime = raw.create_time;
   return info;
+}
+
+/** Signed atomic delta for stake fees only; other amounts stay non-negative. */
+function requireSignedBigint(v: unknown, field: string): bigint {
+  if (typeof v === 'string' && /^-?[0-9]+$/.test(v)) return BigInt(v);
+  if (typeof v === 'number' && Number.isSafeInteger(v)) return BigInt(v);
+  throw new ChainError(
+    'malformed_response',
+    `Field '${field}' is not an exact integer: ${String(v)}`,
+  );
 }
 
 function requireBigint(v: unknown, field: string): bigint {
