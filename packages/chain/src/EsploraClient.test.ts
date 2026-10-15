@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ChainError } from './errors.js';
 import { EsploraClient } from './EsploraClient.js';
+import { MAX_BROADCAST_BYTES } from './index.js';
 import type { NodeEndpoint } from './nodes.js';
 import addressInfoFixture from './fixtures/address-info.json';
 import utxosFixture from './fixtures/utxos.json';
@@ -454,13 +455,30 @@ describe('EsploraClient.broadcastTransaction', () => {
     });
   });
 
-  it('rejects hex larger than 100 KB', async () => {
+  it.each([100_001, 2 * 1024 * 1024 - 1, 2 * 1024 * 1024])(
+    'POSTs all %i transaction bytes without truncation', async (bytes) => {
+      expect(MAX_BROADCAST_BYTES).toBe(2_097_152);
+      const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({ txid: validTxid }));
+      const hex = 'ab'.repeat(bytes);
+      expect(await makeClient(fetchImpl).broadcastTransaction(hex)).toBe(validTxid);
+      expect(fetchImpl).toHaveBeenCalledOnce();
+      const init = fetchImpl.mock.calls[0]![1]!;
+      const body = String(init.body);
+      expect(init.method).toBe('POST');
+      expect(new Headers(init.headers).get('Content-Type')).toBe('application/json');
+      expect(body.length).toBe(bytes * 2 + 10);
+      expect(JSON.parse(body).hex === hex).toBe(true);
+    },
+  );
+
+  it('rejects one byte over 2 MiB without calling fetch', async () => {
     const fetchImpl = vi.fn<typeof fetch>();
     const client = makeClient(fetchImpl);
-    const huge = 'a'.repeat(200_001);
+    const huge = 'ab'.repeat(2 * 1024 * 1024 + 1);
     await expect(client.broadcastTransaction(huge)).rejects.toMatchObject({
-      code: 'invalid_argument',
+      code: 'invalid_argument', message: expect.stringContaining('2 MiB'),
     });
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it('maps 5xx to broadcast_unavailable (the current prod behavior)', async () => {

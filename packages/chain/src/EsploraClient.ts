@@ -32,6 +32,7 @@ import type {
 } from './types.js';
 import type { NodeEndpoint } from './nodes.js';
 import { ChainError } from './errors.js';
+import { MAX_BROADCAST_BYTES } from './limits.js';
 import { request, type TransportOptions } from './transport.js';
 
 // ─── Raw Esplora response shapes ─────────────────────────────────────
@@ -446,9 +447,9 @@ export class EsploraClient {
         'broadcastTransaction received empty hex',
       );
     }
-    // Body 100 KB max = 200K hex chars.
-    if (hex.length > 200_000) {
-      throw new ChainError('invalid_argument', 'Transaction hex too large (>100 KB)');
+    // Bound serialized transaction bytes, before JSON hex encoding.
+    if (hex.length > MAX_BROADCAST_BYTES * 2) {
+      throw new ChainError('invalid_argument', 'Transaction exceeds the 2 MiB broadcast limit');
     }
 
     try {

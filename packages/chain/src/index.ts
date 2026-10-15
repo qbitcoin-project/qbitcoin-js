@@ -2,6 +2,7 @@
 
 export { ChainClient, type ChainClientConfig } from './ChainClient.js';
 export { EsploraClient } from './EsploraClient.js';
+export { MAX_BROADCAST_BYTES } from './limits.js';
 export {
   ChainError,
   isRetryableCode,
